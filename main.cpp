@@ -16,89 +16,147 @@ bool EventTriggered(double interval)
     return false;
 }
 
+enum GameState { MENU, PLAYING };
+
 int main()
 {
-    const int screenWidth = 500;
-    const int screenHeight = 620;
+    int screenWidth = 520;
+    const int screenHeight = 750;
 
-    // Modern Dark Theme Colors
     Color background = {20, 20, 25, 255};
     Color uiBox = {35, 35, 45, 255};
 
     InitWindow(screenWidth, screenHeight, "Tetris");
     SetTargetFPS(60);
+    SetExitKey(0); // Disable ESC closing the window
 
     Game game = Game();
+    GameState state = MENU;
 
     while (!WindowShouldClose())
     {
+        if (state == MENU) {
+            if (IsKeyPressed(KEY_ONE)) {
+                game.isMultiplayer = false;
+                game.isAIActive = false;
+                screenWidth = 520; // Single player width
+                SetWindowSize(screenWidth, screenHeight);
+                game.Reset();
+                state = PLAYING;
+            }
+            if (IsKeyPressed(KEY_TWO)) {
+                game.isMultiplayer = true;
+                game.isAIActive = false;
+                screenWidth = 1020; // Multiplayer width
+                SetWindowSize(screenWidth, screenHeight);
+                game.Reset();
+                state = PLAYING;
+            }
+            if (IsKeyPressed(KEY_THREE)) {
+                game.isMultiplayer = false;
+                game.isAIActive = true;
+                screenWidth = 1020; // AI mode width
+                SetWindowSize(screenWidth, screenHeight);
+                game.Reset();
+                state = PLAYING;
+            }
+
+            BeginDrawing();
+            ClearBackground(background);
+            DrawText("TETRIS", screenWidth/2 - MeasureText("TETRIS", 60)/2, 150, 60, WHITE);
+            DrawText("1. Single Player", screenWidth/2 - 100, 300, 20, LIGHTGRAY);
+            DrawText("2. Local Multiplayer (WASD)", screenWidth/2 - 100, 350, 20, LIGHTGRAY);
+            DrawText("3. Play vs AI", screenWidth/2 - 100, 400, 20, LIGHTGRAY);
+            EndDrawing();
+            continue;
+        }
+
+        // Exit to menu with ESC
+        if (IsKeyPressed(KEY_ESCAPE)) {
+            state = MENU;
+            screenWidth = 520;
+            SetWindowSize(screenWidth, screenHeight);
+            continue;
+        }
+
         UpdateMusicStream(game.music);
         game.HandleInput();
 
-        // Speed increases with level
-        double moveInterval = 0.5 / (1.0 + (game.level - 1) * 0.2);
+        if (game.isAIActive) {
+            game.UpdateAI();
+        }
+
+        double moveInterval = 0.5 / (1.0 + (game.level[0] - 1) * 0.2);
         if (EventTriggered(moveInterval))
         {
-            game.MoveBlockDown();
+            game.MoveBlockDown(0);
+            if (game.isMultiplayer || game.isAIActive) {
+                game.MoveBlockDown(1);
+            }
         }
 
         BeginDrawing();
         ClearBackground(background);
 
-        // 1. Draw UI Background Elements FIRST
-        // Score Box
-        DrawText("SCORE", 340, 20, 20, LIGHTGRAY);
-        DrawRectangleRounded({320, 45, 170, 50}, 0.2, 6, uiBox);
+        // Adjusted offsets to fit within the new screen width
+        int offsetsX[2] = {11, 511};
+        int count = (game.isMultiplayer || game.isAIActive) ? 2 : 1;
 
-        // High Score Box
-        DrawText("BEST", 340, 110, 20, LIGHTGRAY);
-        DrawRectangleRounded({320, 135, 170, 50}, 0.2, 6, uiBox);
+        for (int i = 0; i < count; i++) {
+            int ox = offsetsX[i];
+            DrawText(TextFormat("PLAYER %d", i+1), ox + 340, 20, 20, (i==0?SKYBLUE:GOLD));
 
-        // Next Block Box
-        DrawText("NEXT", 340, 200, 20, LIGHTGRAY);
-        DrawRectangleRounded({320, 225, 170, 140}, 0.2, 6, uiBox);
+            DrawText("SCORE", ox + 340, 50, 15, LIGHTGRAY);
+            DrawRectangleRounded({(float)ox + 320, 70, 170, 40}, 0.2, 6, uiBox);
 
-        // Level Box
-        DrawText("LEVEL", 340, 380, 20, LIGHTGRAY);
-        DrawRectangleRounded({320, 405, 170, 50}, 0.2, 6, uiBox);
+            char scoreText[10];
+            sprintf(scoreText, "%d", game.score[i]);
+            int scoreWidth = MeasureText(scoreText, 20);
+            DrawText(scoreText, ox + 320 + (170 - scoreWidth) / 2, 80, 20, WHITE);
 
-        // 2. Draw Game Content (Grid, Blocks, and NEXT block)
-        // This ensures blocks are drawn OVER the UI boxes if there's any overlap
+            DrawText("NEXT", ox + 340, 200, 20, LIGHTGRAY);
+            DrawRectangleRounded({(float)ox + 320, 225, 170, 140}, 0.2, 6, uiBox);
+
+            DrawText("LEVEL", ox + 340, 380, 20, LIGHTGRAY);
+            DrawRectangleRounded({(float)ox + 320, 405, 170, 50}, 0.2, 6, uiBox);
+
+            char levelText[10];
+            sprintf(levelText, "%d", game.level[i]);
+            int levelWidth = MeasureText(levelText, 25);
+            DrawText(levelText, ox + 320 + (170 - levelWidth) / 2, 417, 25, SKYBLUE);
+
+            DrawText("HOLD", ox + 340, 470, 20, LIGHTGRAY);
+            DrawRectangleRounded({(float)ox + 320, 495, 170, 140}, 0.2, 6, uiBox);
+
+            // Instructions for each player
+            int instrY = 650;
+            if (i == 0) {
+                DrawText("P1: ARROWS to Move/Rotate", ox + 10, instrY, 15, GRAY);
+                DrawText("SPACE: Drop | C: Hold", ox + 10, instrY + 20, 15, GRAY);
+            } else if (game.isMultiplayer) {
+                DrawText("P2: WASD to Move/Rotate", ox + 10, instrY, 15, GRAY);
+                DrawText("F: Drop | R: Hold", ox + 10, instrY + 20, 15, GRAY);
+            } else if (game.isAIActive) {
+                DrawText("AI PLAYER ACTIVE", ox + 10, instrY, 15, GOLD);
+            }
+        }
+
+        // General instructions
+        DrawText("P: Pause | ESC: Menu", screenWidth/2 - 80, screenHeight - 30, 15, LIGHTGRAY);
+
         game.Draw();
-
-        // 3. Draw Text and Overlays LAST
-        char scoreText[10];
-        sprintf(scoreText, "%d", game.score);
-        int scoreWidth = MeasureText(scoreText, 25);
-        DrawText(scoreText, 320 + (170 - scoreWidth) / 2, 57, 25, WHITE);
-
-        char highscoreText[10];
-        sprintf(highscoreText, "%d", game.highscore);
-        int highscoreWidth = MeasureText(highscoreText, 25);
-        DrawText(highscoreText, 320 + (170 - highscoreWidth) / 2, 147, 25, GOLD);
-
-        char levelText[10];
-        sprintf(levelText, "%d", game.level);
-        int levelWidth = MeasureText(levelText, 25);
-        DrawText(levelText, 320 + (170 - levelWidth) / 2, 417, 25, SKYBLUE);
-
-        // Controls Info
-        DrawText("ARROWS: Move", 330, 500, 15, GRAY);
-        DrawText("UP: Rotate", 330, 520, 15, GRAY);
-        DrawText("SPACE: Drop", 330, 540, 15, GRAY);
-        DrawText("P: Pause", 330, 560, 15, GRAY);
 
         if (game.paused)
         {
             DrawRectangle(0, 0, screenWidth, screenHeight, Fade(BLACK, 0.5f));
-            DrawText("PAUSED", 150, screenHeight / 2 - 20, 40, WHITE);
+            DrawText("PAUSED", screenWidth/2 - 70, screenHeight / 2 - 20, 40, WHITE);
         }
 
         if (game.gameOver)
         {
             DrawRectangle(0, 0, screenWidth, screenHeight, Fade(BLACK, 0.8f));
-            DrawText("GAME OVER", 110, screenHeight / 2 - 40, 40, RED);
-            DrawText("Press any key", 140, screenHeight / 2 + 10, 20, WHITE);
+            DrawText("GAME OVER", screenWidth/2 - 110, screenHeight / 2 - 40, 40, RED);
+            DrawText("Press any key to restart", screenWidth/2 - 120, screenHeight / 2 + 10, 20, WHITE);
         }
 
         EndDrawing();
