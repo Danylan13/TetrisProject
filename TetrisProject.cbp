@@ -31,7 +31,34 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
+			<Add directory="C:/Users/98389/Downloads/raylib/raylib-5.5_win64_mingw-w64/include" />
+			<Add directory="C:/Users/98389/Downloads/raylib/raylib-5.5_win64_mingw-w64/lib" />
 		</Compiler>
+		<Linker>
+			<Add library="opengl32" />
+			<Add library="gdi32" />
+			<Add library="winmm" />
+			<Add library="../raylib/raylib-5.5_win64_mingw-w64/lib/libraylibdll.a" />
+		</Linker>
+		<Unit filename="Block.cpp" />
+		<Unit filename="Block.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Blocks.cpp" />
+		<Unit filename="Blocks.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Game.cpp" />
+		<Unit filename="Game.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Grid.cpp" />
+		<Unit filename="Grid.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Position.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="main.cpp" />
 		<Extensions />
 	</Project>

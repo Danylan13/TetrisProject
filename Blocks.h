@@ -9,7 +9,7 @@ class LBlock : public Block
 public:
     LBlock()
     {
-        id = 1;
+        id = 3;
         cells[0] = { {0, 2}, {1, 0}, {1, 1}, {1, 2} };
         cells[1] = { {0, 1}, {1, 1}, {2, 1}, {2, 2} };
         cells[2] = { {1, 0}, {1, 1}, {1, 2}, {2, 0} };
@@ -37,7 +37,7 @@ class IBlock : public Block
 public:
     IBlock()
     {
-        id = 3;
+        id = 1;
         cells[0] = { {1, 0}, {1, 1}, {1, 2}, {1, 3} };
         cells[1] = { {0, 2}, {1, 2}, {2, 2}, {3, 2} };
         cells[2] = { {2, 0}, {2, 1}, {2, 2}, {2, 3} };

@@ -41,21 +41,29 @@ void Grid::Draw()
         for (int c = 0; c < numCols; c++)
         {
             int cellValue = grid[r][c];
-            DrawRectangle(c * cellSize + 1, r * cellSize + 1, cellSize - 1, cellSize - 1, colors[cellValue]);
+            // Draw grid background
+            DrawRectangle(c * cellSize + 11, r * cellSize + 11, cellSize - 1, cellSize - 1, {30, 30, 40, 255});
+
+            if (cellValue != 0) {
+                DrawRectangle(c * cellSize + 11, r * cellSize + 11, cellSize - 1, cellSize - 1, colors[cellValue]);
+                // Add a small highlight for 3D effect
+                DrawRectangle(c * cellSize + 11, r * cellSize + 11, cellSize - 1, 2, Fade(WHITE, 0.3f));
+                DrawRectangle(c * cellSize + 11, r * cellSize + 11, 2, cellSize - 1, Fade(WHITE, 0.3f));
+            }
         }
     }
 }
 
 void Grid::FillColors()
 {
-    colors.push_back(BLACK); // 0: Empty
-    colors.push_back(RED);   // 1: I-Block
-    colors.push_back(BLUE);  // 2: J-Block
-    colors.push_back(GREEN); // 3: L-Block
-    colors.push_back(YELLOW);// 4: O-Block
-    colors.push_back(PURPLE);// 5: S-Block
-    colors.push_back(ORANGE);// 6: T-Block
-    colors.push_back(PINK);  // 7: Z-Block
+    colors.push_back({20, 20, 25, 255});    // 0: Empty
+    colors.push_back({0, 240, 240, 255});   // 1: I-Block (Cyan)
+    colors.push_back({0, 0, 240, 255});     // 2: J-Block (Blue)
+    colors.push_back({240, 160, 0, 255});   // 3: L-Block (Orange)
+    colors.push_back({240, 240, 0, 255});   // 4: O-Block (Yellow)
+    colors.push_back({0, 240, 0, 255});     // 5: S-Block (Green)
+    colors.push_back({160, 0, 240, 255});   // 6: T-Block (Purple)
+    colors.push_back({240, 0, 0, 255});     // 7: Z-Block (Red)
 }
 
 bool Grid::IsCellOutside(int row, int column)
