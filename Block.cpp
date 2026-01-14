@@ -28,7 +28,6 @@ void Block::Draw(int offsetX, int offsetY)
     for (Position item : tilePositions)
     {
         DrawRectangle(item.column * cellSize + offsetX, item.row * cellSize + offsetY, cellSize - 1, cellSize - 1, colors[id]);
-        // Add a small highlight for 3D effect
         DrawRectangle(item.column * cellSize + offsetX, item.row * cellSize + offsetY, cellSize - 1, 2, Fade(WHITE, 0.3f));
         DrawRectangle(item.column * cellSize + offsetX, item.row * cellSize + offsetY, 2, cellSize - 1, Fade(WHITE, 0.3f));
     }
@@ -76,7 +75,6 @@ void Block::DrawPreview(int offsetX, int offsetY)
     for (Position item : tilePositions)
     {
         DrawRectangle(item.column * cellSize + offsetX, item.row * cellSize + offsetY, cellSize - 1, cellSize - 1, colors[id]);
-        // Add a small highlight for 3D effect
         DrawRectangle(item.column * cellSize + offsetX, item.row * cellSize + offsetY, cellSize - 1, 2, Fade(WHITE, 0.3f));
         DrawRectangle(item.column * cellSize + offsetX, item.row * cellSize + offsetY, 2, cellSize - 1, Fade(WHITE, 0.3f));
     }
