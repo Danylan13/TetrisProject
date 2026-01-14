@@ -12,7 +12,7 @@ public:
     Grid();
     void Initialize();
     void Print();
-    void Draw();
+    void Draw(int offsetX, int offsetY);
     bool IsCellOutside(int row, int column);
     bool IsCellEmpty(int row, int column);
     void SetCellValue(int row, int column, int value);
