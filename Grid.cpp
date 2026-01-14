@@ -34,7 +34,7 @@ void Grid::Print()
     }
 }
 
-void Grid::Draw()
+void Grid::Draw(int offsetX, int offsetY)
 {
     for (int r = 0; r < numRows; r++)
     {
@@ -42,13 +42,12 @@ void Grid::Draw()
         {
             int cellValue = grid[r][c];
             // Draw grid background
-            DrawRectangle(c * cellSize + 11, r * cellSize + 11, cellSize - 1, cellSize - 1, {30, 30, 40, 255});
+            DrawRectangle(c * cellSize + offsetX, r * cellSize + offsetY, cellSize - 1, cellSize - 1, {30, 30, 40, 255});
 
             if (cellValue != 0) {
-                DrawRectangle(c * cellSize + 11, r * cellSize + 11, cellSize - 1, cellSize - 1, colors[cellValue]);
-                // Add a small highlight for 3D effect
-                DrawRectangle(c * cellSize + 11, r * cellSize + 11, cellSize - 1, 2, Fade(WHITE, 0.3f));
-                DrawRectangle(c * cellSize + 11, r * cellSize + 11, 2, cellSize - 1, Fade(WHITE, 0.3f));
+                DrawRectangle(c * cellSize + offsetX, r * cellSize + offsetY, cellSize - 1, cellSize - 1, colors[cellValue]);
+                DrawRectangle(c * cellSize + offsetX, r * cellSize + offsetY, cellSize - 1, 2, Fade(WHITE, 0.3f));
+                DrawRectangle(c * cellSize + offsetX, r * cellSize + offsetY, 2, cellSize - 1, Fade(WHITE, 0.3f));
             }
         }
     }
