@@ -84,4 +84,5 @@ Objectif : **minimiser les trous et la hauteur**, tout en **maximisant les ligne
 ### 🛠️ Compilation manuelle (exemple GCC sous Windows)
 ```bash
 g++ *.cpp -lraylib -lopengl32 -lgdi32 -lwinmm -o Tetris.exe
+```
 Note : Les drapeaux de liaison peuvent varier selon votre système d'exploitation.
